@@ -126,20 +126,22 @@ class DouYin(BaseParser):
                             ImgInfo(url=image_url, live_photo_url=live_photo_url)
                         )
 
-        # 获取视频播放地址
+        # 获取视频和音频播放地址
         video_url = ""
-        if (
-            "video" in data
-            and "play_addr" in data["video"]
-            and "url_list" in data["video"]["play_addr"]
-        ):
-            video_url = data["video"]["play_addr"]["url_list"][0].replace(
-                "playwm", "play"
-            )
+        music_url = ""
+        if "video" in data and "play_addr" in data["video"]:
+            if "url_list" in data["video"]["play_addr"]:
+                video_url = data["video"]["play_addr"]["url_list"][0].replace(
+                    "playwm", "play"
+                )
+            music_url = data["video"]["play_addr"].get("uri", "")
 
         # 如果图集地址不为空时，因为没有视频，上面抖音返回的视频地址无法访问，置空处理
         if len(images) > 0:
             video_url = ""
+        else:
+            # 图集时, video.play_addr.uri 是音频地址; 视频时不是
+            music_url = ""
 
         # 获取重定向后的mp4视频地址
         # 图集时，视频地址为空，不处理
@@ -159,6 +161,7 @@ class DouYin(BaseParser):
         video_info = VideoInfo(
             video_url=video_mp4_url,
             cover_url=cover_url,
+            music_url=music_url,
             title=data.get("desc", ""),
             images=images,
             author=VideoAuthor(

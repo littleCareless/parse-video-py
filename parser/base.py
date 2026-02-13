@@ -32,6 +32,7 @@ class VideoSource(Enum):
     HaoKan = "haokan"  # 好看视频
     BiliBili = "bilibili"  # 哔哩哔哩
     RedBook = "redbook"  # 小红书
+    Twitter = "twitter"  # Twitter/X
 
 
 @dataclasses.dataclass

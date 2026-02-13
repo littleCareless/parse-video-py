@@ -15,6 +15,7 @@ from .quanmin import QuanMin
 from .quanminkge import QuanMinKGe
 from .redbook import RedBook
 from .sixroom import SixRoom
+from .twitter import Twitter
 from .weibo import WeiBo
 from .weishi import WeiShi
 from .xigua import XiGua
@@ -116,6 +117,15 @@ video_source_info_mapping = {
             "xhslink.com",
         ],
         "parser": RedBook,
+    },
+    VideoSource.Twitter: {
+        "domain_list": [
+            "twitter.com",
+            "x.com",
+            "t.co",
+            "mobile.twitter.com",
+        ],
+        "parser": Twitter,
     },
 }
 

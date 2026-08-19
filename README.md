@@ -3,7 +3,7 @@
    * [Docker](#docker)
    * [依赖模块](#依赖模块)
 
-Python短视频去水印, 视频目前支持22个平台, 图集目前支持5个平台, 欢迎各位Star。
+Python短视频去水印, 视频目前支持25个平台, 图集目前支持5个平台, 欢迎各位Star。
 > 💡tips
 > 1. 出现解析失败可在 issue 中提问，请提供可用于复现的平台信息、分享链接.
 > 2. 使用时, 请尽量使用app分享链接, 电脑网页版未做充分测试.
@@ -12,22 +12,6 @@ Python短视频去水印, 视频目前支持22个平台, 图集目前支持5个�
 - [Golang版本](https://github.com/wujunwei928/parse-video)
 
 ---
-
-<div align="center">
-
-##  🚀 GLM Coding 限时优惠！性能强劲 量大管饱
-
-### 🎁 智谱 GLM Coding 超值订阅，邀你一起"薅羊毛"！
-
-**本项目前端多套主体样式和后端逻辑均有用到GLM辅助开发, 绝对性能够用, 又量大管饱.**
-
-[立即开拼，享限时惊喜价, 首购低至4折！](https://www.bigmodel.cn/glm-coding?ic=KUS7WQB5UI)
-
-<img src="resources/BigmodelPoster.png" alt="拼好模活动海报" width="300">
-
----
-
-</div>
 
 # MCP 支持
 本项目现已支持 [MCP (Model Context Protocol)](https://modelcontextprotocol.io/)，提供StreamableHttp方式接入， 接入URL： http://localhost:8000/mcp
@@ -72,32 +56,42 @@ Python短视频去水印, 视频目前支持22个平台, 图集目前支持5个�
 | 好看视频     | ✔  |
 | 虎牙       | ✔  |
 | AcFun    | ✔  |
+| 央视网     | ✔  |
+| 搜狐视频    | ✔  |
 | 哔哩哔哩	| ✔  |
+| 腾讯视频    | ✔  |
 | Twitter/X	| ✔  |
 
 # 运行
 
 ## 本地运行
 
-### 创建并激活 python 虚拟环境
+### 使用 uv（推荐）
 ```shell
 # 进入项目根目录
 cd parse-video-py
 
-# 创建虚拟环境
-# 注意python 版本需要 >= 3.10
-python -m venv venv
+# 创建虚拟环境并安装全部依赖
+uv venv && uv pip install -e ".[all]"
 
-# macos & linux 激活虚拟环境
-source venv/bin/activate
-
-# windows 激活虚拟环境
-venv\Scripts\activate
+# 激活虚拟环境
+source .venv/bin/activate
 ```
 
-### 安装依赖库
+### CLI 命令行
 ```shell
-pip install -r requirements.txt
+# 安装
+uv pip install -e ".[all]"
+
+# 解析视频
+parse-video-py parse "https://v.douyin.com/xxx"
+parse-video-py parse "https://v.douyin.com/xxx" --format json
+
+# 启动 Web 服务
+parse-video-py serve --port 8000
+
+# 查看版本
+parse-video-py version
 ```
 
 ### 如需开启basic auth认证，请自行设置环境变量，不设置不开启，默认不开启
@@ -106,9 +100,18 @@ export PARSE_VIDEO_USERNAME=username
 export PARSE_VIDEO_PASSWORD=password
 ```
 
+### 如需设置代理，请设置环境变量（不设置则直连）
+```shell
+# 无认证代理
+export PARSE_VIDEO_PROXY=http://proxy.example.com:端口
+
+# 有认证代理
+export PARSE_VIDEO_PROXY=http://user:pass@proxy.example.com:端口
+```
+
 ### 运行app
 ```shell
-uvicorn main:app --reload
+uvicorn parse_video_py.web:app --reload
 ```
 
 ## Docker运行
@@ -125,6 +128,11 @@ docker run -d -p 8000:8000 wujunwei928/parse-video-py
 ### 运行docker容器，开启basic auth认证
 ```bash
 docker run -d -p 8000:8000 -e PARSE_VIDEO_USERNAME=username -e PARSE_VIDEO_PASSWORD=password wujunwei928/parse-video-py
+```
+
+### 运行docker容器，设置代理
+```bash
+docker run -d -p 8000:8000 -e PARSE_VIDEO_PROXY=http://proxy.example.com:端口 wujunwei928/parse-video-py
 ```
 
 # 查看前端页面
@@ -167,7 +175,7 @@ curl 'http://127.0.0.1:8000/video/share/url/parse?url=视频分享链接' | jq
 import json
 import asyncio
 
-from parser import parse_video_share_url, parse_video_id, VideoSource
+from parse_video_py import parse_video_share_url, parse_video_id, VideoSource
 
 # 根据分享链接解析
 video_info = asyncio.run(parse_video_share_url("分享链接"))
